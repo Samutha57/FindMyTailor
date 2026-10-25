@@ -28,9 +28,15 @@ export default function TailorDashboardPage() {
   const { data: profileResponse } = useGetMyTailorProfileQuery(undefined, {
     skip: !isAuthenticated || user?.role !== 'TAILOR',
   });
-  const { data: orders = [], isLoading } = useGetTailorOrdersQuery(undefined, {
+  const { data: ordersResponse, isLoading } = useGetTailorOrdersQuery(undefined, {
     skip: !isAuthenticated || user?.role !== 'TAILOR',
   });
+
+  const orders: any[] = Array.isArray(ordersResponse)
+    ? ordersResponse
+    : Array.isArray(ordersResponse?.data)
+    ? ordersResponse.data
+    : [];
 
   useEffect(() => {
     if (!isAuthenticated) {

@@ -110,6 +110,7 @@ export const apiSlice = createApi({
     }),
     getMyOrders: builder.query<any, void>({
       query: () => '/orders/my-orders',
+      transformResponse: (response: any) => (response?.data !== undefined ? response.data : response),
       providesTags: ['Order'],
     }),
     getTailorOrders: builder.query<any, { filter?: string } | void>({
@@ -117,6 +118,7 @@ export const apiSlice = createApi({
         url: '/orders/tailor-orders',
         params: params || {},
       }),
+      transformResponse: (response: any) => (response?.data !== undefined ? response.data : response),
       providesTags: ['Order'],
     }),
     getOrderById: builder.query<any, string>({

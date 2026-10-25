@@ -35,12 +35,18 @@ function TailorOrdersContent() {
   const [rejectModalOrder, setRejectModalOrder] = useState<any | null>(null);
   const [rejectReason, setRejectReason] = useState('');
 
-  const { data: orders = [], isLoading, refetch } = useGetTailorOrdersQuery(
+  const { data: response, isLoading, refetch } = useGetTailorOrdersQuery(
     activeFilter === 'all' ? undefined : { filter: activeFilter },
     {
       skip: !isAuthenticated || user?.role !== 'TAILOR',
     }
   );
+
+  const orders: any[] = Array.isArray(response)
+    ? response
+    : Array.isArray(response?.data)
+    ? response.data
+    : [];
 
   const [updateOrderStatus, { isLoading: isUpdating }] = useUpdateOrderStatusMutation();
 

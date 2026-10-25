@@ -24,9 +24,15 @@ export default function CustomerOrdersPage() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const [activeTab, setActiveTab] = useState<'ALL' | 'ACTIVE' | 'COMPLETED'>('ALL');
 
-  const { data: orders = [], isLoading, refetch } = useGetMyOrdersQuery(undefined, {
+  const { data: response, isLoading, refetch } = useGetMyOrdersQuery(undefined, {
     skip: !isAuthenticated,
   });
+
+  const orders: any[] = Array.isArray(response)
+    ? response
+    : Array.isArray(response?.data)
+    ? response.data
+    : [];
 
   useEffect(() => {
     if (!isAuthenticated) {

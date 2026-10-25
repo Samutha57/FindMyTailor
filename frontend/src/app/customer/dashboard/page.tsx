@@ -22,9 +22,15 @@ import {
 export default function CustomerDashboardPage() {
   const router = useRouter();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { data: orders = [], isLoading } = useGetMyOrdersQuery(undefined, {
+  const { data: response, isLoading } = useGetMyOrdersQuery(undefined, {
     skip: !isAuthenticated,
   });
+
+  const orders: any[] = Array.isArray(response)
+    ? response
+    : Array.isArray(response?.data)
+    ? response.data
+    : [];
 
   useEffect(() => {
     if (!isAuthenticated) {
