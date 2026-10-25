@@ -21,7 +21,7 @@ import {
 
 export default function CustomerDashboardPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { user, isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
   const { data: response, isLoading } = useGetMyOrdersQuery(undefined, {
     skip: !isAuthenticated,
   });
@@ -33,10 +33,18 @@ export default function CustomerDashboardPage() {
     : [];
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isInitialized && !isAuthenticated) {
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [isInitialized, isAuthenticated, router]);
+
+  if (!isInitialized || (!isAuthenticated && isLoading)) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-16 text-center text-slate-500 text-sm">
+        Loading dashboard...
+      </div>
+    );
+  }
 
   if (!isAuthenticated) return null;
 

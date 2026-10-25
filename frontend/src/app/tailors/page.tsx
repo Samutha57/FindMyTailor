@@ -33,7 +33,11 @@ function TailorDiscoveryContent() {
     service: selectedTag === 'All' ? undefined : selectedTag,
   });
 
-  const tailors = response?.data || [];
+  const tailors: any[] = Array.isArray(response)
+    ? response
+    : Array.isArray(response?.data)
+    ? response.data
+    : [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">

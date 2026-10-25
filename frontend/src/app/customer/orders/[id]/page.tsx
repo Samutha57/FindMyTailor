@@ -32,7 +32,7 @@ export default function OrderTrackingDetailPage() {
     skip: !isAuthenticated || !orderId,
   });
 
-  const order = response?.data;
+  const order = response?.data || response;
 
   if (!isAuthenticated) {
     return (

@@ -21,12 +21,14 @@ interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isInitialized: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
   token: null,
   isAuthenticated: false,
+  isInitialized: false,
 };
 
 export const authSlice = createSlice({
@@ -40,6 +42,7 @@ export const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
+      state.isInitialized = true;
       if (typeof window !== 'undefined') {
         localStorage.setItem('fmt_token', action.payload.token);
         localStorage.setItem('fmt_user', JSON.stringify(action.payload.user));
@@ -75,6 +78,7 @@ export const authSlice = createSlice({
           }
         }
       }
+      state.isInitialized = true;
     },
   },
 });

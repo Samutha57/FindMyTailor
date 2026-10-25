@@ -58,8 +58,8 @@ export default function LoginPage() {
   };
 
   const handleFillDemo = (email: string) => {
-    setValue('email', email);
-    setValue('password', 'Password123!');
+    setValue('email', email, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+    setValue('password', 'Password123!', { shouldValidate: true, shouldDirty: true, shouldTouch: true });
   };
 
   return (

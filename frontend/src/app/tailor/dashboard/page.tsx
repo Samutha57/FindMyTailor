@@ -23,7 +23,7 @@ import {
 
 export default function TailorDashboardPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { user, isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
 
   const { data: profileResponse } = useGetMyTailorProfileQuery(undefined, {
     skip: !isAuthenticated || user?.role !== 'TAILOR',
@@ -39,13 +39,16 @@ export default function TailorDashboardPage() {
     : [];
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    } else if (user?.role !== 'TAILOR') {
-      router.push('/customer/dashboard');
+    if (isInitialized) {
+      if (!isAuthenticated) {
+        router.push('/login');
+      } else if (user?.role !== 'TAILOR') {
+        router.push('/customer/dashboard');
+      }
     }
-  }, [isAuthenticated, user, router]);
+  }, [isInitialized, isAuthenticated, user, router]);
 
+  if (!isInitialized) return null;
   if (!isAuthenticated || user?.role !== 'TAILOR') return null;
 
   const profile = profileResponse?.data || user?.tailorProfile;

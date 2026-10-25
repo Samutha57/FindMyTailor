@@ -30,7 +30,7 @@ function TailorOrdersContent() {
   const searchParams = useSearchParams();
   const filterParam = searchParams.get('filter') || 'all';
 
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { user, isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
   const [activeFilter, setActiveFilter] = useState<string>(filterParam);
   const [rejectModalOrder, setRejectModalOrder] = useState<any | null>(null);
   const [rejectReason, setRejectReason] = useState('');
@@ -51,12 +51,16 @@ function TailorOrdersContent() {
   const [updateOrderStatus, { isLoading: isUpdating }] = useUpdateOrderStatusMutation();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    } else if (user?.role !== 'TAILOR') {
-      router.push('/customer/dashboard');
+    if (isInitialized) {
+      if (!isAuthenticated) {
+        router.push('/login');
+      } else if (user?.role !== 'TAILOR') {
+        router.push('/customer/dashboard');
+      }
     }
-  }, [isAuthenticated, user, router]);
+  }, [isInitialized, isAuthenticated, user, router]);
+
+  if (!isInitialized) return null;
 
   const handleAcceptOrder = async (orderId: string) => {
     try {

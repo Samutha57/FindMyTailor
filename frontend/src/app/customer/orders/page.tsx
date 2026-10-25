@@ -21,7 +21,7 @@ import {
 
 export default function CustomerOrdersPage() {
   const router = useRouter();
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
   const [activeTab, setActiveTab] = useState<'ALL' | 'ACTIVE' | 'COMPLETED'>('ALL');
 
   const { data: response, isLoading, refetch } = useGetMyOrdersQuery(undefined, {
@@ -35,11 +35,12 @@ export default function CustomerOrdersPage() {
     : [];
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isInitialized && !isAuthenticated) {
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [isInitialized, isAuthenticated, router]);
 
+  if (!isInitialized) return null;
   if (!isAuthenticated) return null;
 
   const filteredOrders = orders.filter((order: any) => {

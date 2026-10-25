@@ -42,7 +42,7 @@ export default function TailorOrderDetailPage() {
 
   const [updateOrderStatus, { isLoading: isUpdating }] = useUpdateOrderStatusMutation();
 
-  const order = response?.data;
+  const order = response?.data || response;
 
   if (!isAuthenticated || user?.role !== 'TAILOR') {
     return (

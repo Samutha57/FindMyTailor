@@ -24,7 +24,7 @@ export default function TailorProfilePage() {
   const tailorId = params.id as string;
 
   const { data: response, isLoading, isError } = useGetTailorByIdQuery(tailorId);
-  const tailor = response?.data;
+  const tailor = response?.data || response;
 
   if (isLoading) {
     return (
