@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  TAILOR
+}
+
+enum OrderStatus {
+  ORDER_PLACED
+  ACCEPTED
+  MEASUREMENT
+  CUTTING
+  STITCHING
+  FINISHING
+  QUALITY_CHECK
+  READY_FOR_PICKUP
+  COMPLETED
+  REJECTED
+}
+
+model User {
+  id             String               @id @default(uuid())
+  email          String               @unique
+  password       String
+  name           String
+  phone          String?
+  role           Role                 @default(CUSTOMER)
+  tailorProfile  TailorProfile?
+  customerOrders Order[]              @relation("CustomerOrders")
+  statusChanges  OrderStatusHistory[]
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@map("users")
+}
+
+model TailorProfile {
+  id           String    @id @default(uuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shopName     String
+  ownerName    String
+  address      String
+  contactPhone String
+  workingHours String
+  bio          String?
+  services     Service[]
+  orders       Order[]   @relation("TailorOrders")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("tailor_profiles")
+}
+
+model Service {
+  id              String        @id @default(uuid())
+  tailorProfileId String
+  tailorProfile   TailorProfile @relation(fields: [tailorProfileId], references: [id], onDelete: Cascade)
+  name            String
+  description     String
+  price           Float
+  estimatedDays   Int
+  orders          Order[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("services")
+}
+
+model Order {
+  id                    String               @id @default(uuid())
+  orderNumber           String               @unique
+  customerId            String
+  customer              User                 @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Restrict)
+  tailorProfileId       String
+  tailorProfile         TailorProfile        @relation("TailorOrders", fields: [tailorProfileId], references: [id], onDelete: Restrict)
+  serviceId             String
+  service               Service              @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  quantity              Int                  @default(1)
+  totalPrice            Float
+  requestedDeliveryDate DateTime
+  instructions          String?
+  status                OrderStatus          @default(ORDER_PLACED)
+  statusHistory         OrderStatusHistory[]
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  @@map("orders")
+}
+
+model OrderStatusHistory {
+  id          String      @id @default(uuid())
+  orderId     String
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status      OrderStatus
+  note        String?
+  changedById String
+  changedBy   User        @relation(fields: [changedById], references: [id], onDelete: Restrict)
+  createdAt   DateTime    @default(now())
+
+  @@map("order_status_history")
+}
